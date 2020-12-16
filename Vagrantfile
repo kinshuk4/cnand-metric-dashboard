@@ -30,7 +30,7 @@ Vagrant.configure("2") do |config|
 
   # config.vm.network "public_network"
 
-  # config.vm.synced_folder "../data", "/vagrant_data"
+  config.vm.synced_folder "./manifests", "/vagrant_data/manifests"
 
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "8192"

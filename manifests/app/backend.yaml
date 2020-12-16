@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: ghcr.io/thejaysmith/backend:v1
+        image: kinshuk4/cnand-md-backend:latest
         ports:
         - containerPort: 8080
 ---
