@@ -1,9 +1,5 @@
 REFERENCE := reference-app
 
-build:
-	cd ${REFERENCE} && docker-compose build -m grpc_tools.protoc -I ./${PROTO_SRC_DIR} --python_out=./${PROTO_TARGET_DIR_LOCATION} --grpc_python_out=./${PROTO_TARGET_DIR_LOCATION} ./${PROTO_SRC_DIR}/*.proto
-	cp -r ${API}/location/grpc-producer/${PROTO_TARGET_DIR_LOCATION}/*  ${API}/location/consumer/${PROTO_TARGET_DIR_LOCATION}/
-
 up:
 	cd ${REFERENCE} && docker-compose up --build -d
 
@@ -13,5 +9,11 @@ up:
 down:
 	cd ${REFERENCE} && docker-compose down
 
+build:
+	cd ${REFERENCE} && docker-compose build
+
 push:
 	cd ${REFERENCE} && docker-compose push
+
+port-forward:
+	kubectl port-forward -n monitoring svc/prometheus-grafana --address 0.0.0.0 3000:80

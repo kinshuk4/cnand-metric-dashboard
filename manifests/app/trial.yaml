@@ -15,6 +15,7 @@ spec:
       containers:
       - name: trial
         image: kinshuk4/cnand-md-trial:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
 ---

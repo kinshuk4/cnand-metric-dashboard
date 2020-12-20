@@ -15,6 +15,7 @@ spec:
       containers:
       - name: frontend
         image: kinshuk4/cnand-md-frontend:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
 ---
