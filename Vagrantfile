@@ -1,6 +1,6 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "opensuse/Leap-15.2.x86_64"
-  config.vm.box_version = "15.2.31.270"
+  config.vm.box_version = "15.2.31.289"
 
   # config.vm.box_check_update = false
 
