@@ -3,9 +3,6 @@ REFERENCE := reference-app
 up:
 	cd ${REFERENCE} && docker-compose up --build -d
 
-up:
-	cd ${REFERENCE} && docker-compose up --build -d
-
 down:
 	cd ${REFERENCE} && docker-compose down
 
