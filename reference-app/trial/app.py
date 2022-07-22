@@ -65,11 +65,12 @@ def homepage():
         for result in res.json():
             try:
                 homepages.append(requests.get(result['company_url']))
-            except:
+            except Exception as e:
+                logging.error("Got the error: ", e)
                 return "Unable to get site for %s" % result['company']
         
 
-
+    
     return jsonify(homepages)
 
 if __name__ == "__main__":
