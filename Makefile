@@ -7,16 +7,34 @@ down:
 	@vagrant down
 
 app-up:
-	cd ${REFERENCE} && @docker-compose up --build -d
+	cd ${REFERENCE} && docker-compose up --build -d
 
 app-down:
-	cd ${REFERENCE} && @docker-compose down
+	cd ${REFERENCE} && docker-compose down
 
 app-build:
-	cd ${REFERENCE} && @docker-compose build
+	cd ${REFERENCE} && docker-compose build
 
 app-push:
-	cd ${REFERENCE} && @docker-compose push
+	cd ${REFERENCE} && docker-compose push
+
+backend-up:
+	cd ${REFERENCE} && docker-compose up --build backend
+
+backend-fmt:
+	cd ${REFERENCE}/backend && black .
+
+frontend-up:
+	cd ${REFERENCE} && docker-compose up --build frontend
+
+frontend-fmt:
+	cd ${REFERENCE}/frontend && black .
+
+trial-up:
+	cd ${REFERENCE} && docker-compose up --build trial
+
+trial-fmt:
+	cd ${REFERENCE}/trial && black .
 
 setup-alias:
 	alias k='kubectl'
