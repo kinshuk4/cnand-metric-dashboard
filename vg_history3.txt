@@ -1,0 +1,52 @@
+    1  kubectl get pods
+    2  kubectl version
+    3  curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+    4  kubectl create namespace monitoring
+    5  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+    6  helm repo add stable https://charts.helm.sh/stable
+    7  helm repo update
+    8  helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --kubeconfig /etc/rancher/k3s/k3s.yaml
+    9  kubectl get pods -n monitoring
+   10  kubectl create namespace observability
+   11  export jaeger_version=v1.28.0
+   12  kubectl create -n observability -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/crds/jaegertracing.io_jaegers_crd.yaml
+   13  kubectl create -n observability -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/service_account.yaml
+   14  kubectl create -n observability -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/role.yaml
+   15  kubectl create -n observability -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/role_binding.yaml
+   16  kubectl create -n observability -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/operator.yaml
+   17  kubectl create -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/cluster_role.yaml
+   18  kubectl create -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/cluster_role_binding.yaml
+   19  kubectl get deployments jaeger-operator -n observability
+   20  kubectl get pods,svc --namespace=monitoring
+   21  kubectl get pods,deployments,svc --namespace=monitoring
+   22  kubectl get pods,deployments,svc --namespace=observability
+   23  docker
+   24  kubectl get pods,deployments,svc --namespace=observability
+   25  kubectl get pods,deployments,svc --namespace=monitoring
+   26  history
+   27  history > vg_history3.txt
+
+kubectl apply -f backend.yaml
+kubectl apply -f frontend.yaml
+kubectl apply -f trial.yaml 
+
+kubectl get pods,deployments,svc
+
+kubectl port-forward -n monitoring svc/prometheus-grafana --address 0.0.0.0 3000:80
+kubectl port-forward svc/frontend-service --address 0.0.0.0 8080:8080
+kubectl port-forward svc/backend-service --address 0.0.0.0 8081:8080
+
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.3/deploy/static/provider/cloud/deploy.yaml
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.5.1/deploy/static/provider/cloud/deploy.yaml --kubeconfig /etc/rancher/k3s/k3s.yaml
+
+alias k=kubectl
+alias kc="kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml"
+
+helm upgrade --install ingress-nginx ingress-nginx \
+  --repo https://kubernetes.github.io/ingress-nginx \
+  --namespace ingress-nginx --create-namespace  --kubeconfig /etc/rancher/k3s/k3s.yaml
+
+kubectl get deployment -n observability
+kubectl get jaegers -n observability

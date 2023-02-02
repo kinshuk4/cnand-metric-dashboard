@@ -15,63 +15,104 @@ from opentelemetry.sdk.trace.export import (
     ConsoleSpanExporter,
     SimpleExportSpanProcessor,
 )
+from prometheus_flask_exporter.multiprocess import GunicornInternalPrometheusMetrics
+from flask_opentracing import FlaskTracing
+import re
 
 trace.set_tracer_provider(TracerProvider())
 trace.get_tracer_provider().add_span_processor(
     SimpleExportSpanProcessor(ConsoleSpanExporter())
 )
 
+
 app = Flask(__name__)
 CORS(app)
 
 FlaskInstrumentor().instrument_app(app)
 RequestsInstrumentor().instrument()
+metrics = GunicornInternalPrometheusMetrics(app)
+metrics.info("app_info", "Trial Service", version="1.0")
 
-
-#config = Config(
+# config = Config(
 #        config={},
 #        service_name='your-app-name',
 #        validate=True,
 #        metrics_factory=PrometheusMetricsFactory(service_name_label='your-app-name')
-#)
-#tracer = config.initialize_tracer()
+# )
+# tracer = config.initialize_tracer()
+
+
+def init_logging():
+    logging.getLogger("").handlers = []
+    logging.basicConfig(format="%(message)s", level=logging.DEBUG)
+
 
 def init_tracer(service):
-    logging.getLogger('').handlers = []
-    logging.basicConfig(format='%(message)s', level=logging.DEBUG)
-
     config = Config(
         config={
-            'sampler': {
-                'type': 'const',
-                'param': 1,
+            "sampler": {
+                "type": "const",
+                "param": 1,
             },
-            'logging': True,
+            "logging": True,
         },
         service_name=service,
+        validate=True,
+        metrics_factory=PrometheusMetricsFactory(service_name_label=service),
     )
 
     # this call also sets opentracing.tracer
     return config.initialize_tracer()
 
-tracer = init_tracer('first-service')
 
-@app.route('/')
+init_logging()
+logger = logging.getLogger(__name__)
+tracer = init_tracer("trial")
+flask_tracer = FlaskTracing(tracer, True, app)
+
+
+@app.route("/")
 def homepage():
-    with tracer.start_span('get-python-jobs') as span:
-        homepages = []
-        res = requests.get('https://jobs.github.com/positions.json?description=python')
-        span.set_tag('first-tag', len(res.json()))
-        for result in res.json():
-            try:
-                homepages.append(requests.get(result['company_url']))
-            except Exception as e:
-                logging.error("Got the error: ", e)
-                return "Unable to get site for %s" % result['company']
-        
+    return render_template("main.html")
 
-    
-    return jsonify(homepages)
+
+@app.route("/trace")
+def trace():
+    def remove_tags(text):
+        tag = re.compile(r"<[^>]+>")
+        return tag.sub("", text)
+
+    with tracer.start_span("get-python-jobs") as span:
+        res = requests.get("https://jobs.github.com/positions.json?description=python")
+        span.log_kv({"event": "get jobs count", "count": len(res.json())})
+        span.set_tag("jobs-count", len(res.json()))
+        jobs_info = []
+        for result in res.json():
+            jobs = {}
+            with tracer.start_span("request-site") as site_span:
+                logger.info(f"Getting website for {result['company']}")
+                try:
+                    jobs["description"] = remove_tags(result["description"])
+                    jobs["company"] = result["company"]
+                    jobs["company_url"] = result["company_url"]
+                    jobs["created_at"] = result["created_at"]
+                    jobs["how_to_apply"] = result["how_to_apply"]
+                    jobs["location"] = result["location"]
+                    jobs["title"] = result["title"]
+                    jobs["type"] = result["type"]
+                    jobs["url"] = result["url"]
+                    jobs_info.append(jobs)
+                    site_span.set_tag("http.status_code", res.status_code)
+                    site_span.set_tag("company-site", result["company"])
+                except Exception:
+                    logger.error(f"Unable to get site for {result['company']}")
+                    site_span.set_tag("http.status_code", res.status_code)
+                    site_span.set_tag("company-site", result["company"])
+
+    return jsonify(jobs_info)
+
 
 if __name__ == "__main__":
-    app.run(debug=True,)
+    app.run(
+        debug=True,
+    )

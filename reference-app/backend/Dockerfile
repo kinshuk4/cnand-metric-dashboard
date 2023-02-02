@@ -10,6 +10,9 @@ COPY . ./
 ARG PROJECT_ID
 ENV PROJECT_ID ${PROJECT_ID}
 
+# Prometheus exporter vars
+ENV PROMETHEUS_MULTIPROC_DIR /app
+ENV prometheus_multiproc_dir /app
 
 # Install production dependencies.
 RUN apt-get update && \

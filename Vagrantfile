@@ -1,6 +1,14 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.require_version ">= 2.2.10"
 Vagrant.configure("2") do |config|
   config.vm.box = "opensuse/Leap-15.2.x86_64"
-  config.vm.box_version = "15.2.31.289"
+  config.vm.box_version = "15.2.31.584"
 
   # config.vm.box_check_update = false
 
@@ -18,8 +26,9 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 16686, host: 8088
   config.vm.network "forwarded_port", guest: 8888, host: 8888
   config.vm.network "forwarded_port", guest: 8000, host: 8000
-  config.vm.network "forwarded_port", guest: 7000, host: 7000
+  config.vm.network "forwarded_port", guest: 7001, host: 7001
   config.vm.network "forwarded_port", guest: 9000, host: 9000
+  config.vm.network "forwarded_port", guest: 8081, host: 8081
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine and only allow access
@@ -38,7 +47,17 @@ Vagrant.configure("2") do |config|
     vb.memory = "8192"
     vb.name = "k3s"
   end
+  #
+  # View the documentation for the provider you are using for more
+  # information on available options.
 
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+  config.vm.provision "shell", inline: <<-SHELL
+     sudo zypper --non-interactive install apparmor-parser
+  SHELL
+  
   args = []
       config.vm.provision "k3s shell script", type: "shell",
           path: "scripts/k3s.sh",

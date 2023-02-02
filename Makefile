@@ -77,3 +77,5 @@ jaeger-port-forward:
 frontend-port-forward:
 	kubectl port-forward svc/frontend-service --address 0.0.0.0 8080:8080
 
+cp_manifests:
+	vagrant scp manifests/app .
