@@ -10,8 +10,10 @@
 ![monitoring](./answer-img/monitoring-namespace.png)
 
 ### Observability Namespace
+This is observability namespace after installing Jaeger operator:
 ![observability](./answer-img/observability-namespace.png)
-
+This is observability namespace after install Jaeger app:
+![observability-2](./answer-img/observability-namespace-2.png)
 ### Default Namespace
 ![default](./answer-img/default-namespace.png)
 
