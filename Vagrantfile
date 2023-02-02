@@ -29,6 +29,8 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 7001, host: 7001
   config.vm.network "forwarded_port", guest: 9000, host: 9000
   config.vm.network "forwarded_port", guest: 8081, host: 8081
+  config.vm.network "forwarded_port", guest: 8083, host: 8083
+  config.vm.network "forwarded_port", guest: 16686, host: 16686
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine and only allow access
@@ -41,11 +43,11 @@ Vagrant.configure("2") do |config|
 
   # config.vm.network "public_network"
 
-  # config.vm.synced_folder "./manifests", "/vagrant_data/manifests"
+  config.vm.synced_folder "./manifests", "/vagrant_data/manifests"
 
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "8192"
-    vb.name = "k3s"
+    vb.name = "k3s1"
   end
   #
   # View the documentation for the provider you are using for more
@@ -56,10 +58,36 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
      sudo zypper --non-interactive install apparmor-parser
+     sudo zypper --non-interactive install k9s
+     echo -e "******** Begin installing k3s ********\n"
+     curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.19.5+k3s1 K3S_KUBECONFIG_MODE="644" sh -
+     echo -e "**** End installing k3s. Installing Helm."
+     export PATH=$PATH:/usr/local/bin
+     curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+     echo -e "**** End installing Helm. Setting up monitoring namespace."
+     export PATH=$PATH:/usr/local/bin
+     kubectl create namespace monitoring
+     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+     helm repo add stable https://charts.helm.sh/stable
+     helm repo update
+     helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --kubeconfig /etc/rancher/k3s/k3s.yaml
+     echo -e "**** End setting up monitoring. Setting up observability namespace."
+     kubectl create namespace observability
+     export jaeger_version=v1.28.0
+     kubectl create -n observability -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/crds/jaegertracing.io_jaegers_crd.yaml
+     kubectl create -n observability -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/service_account.yaml
+     kubectl create -n observability -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/role.yaml
+     kubectl create -n observability -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/role_binding.yaml
+     kubectl create -n observability -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/operator.yaml
+     kubectl create -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/cluster_role.yaml
+     kubectl create -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/cluster_role_binding.yaml
+     echo -e "**** End setting up observability. Setting up nginx-ingress namespace."     
+     kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.3/deploy/static/provider/cloud/deploy.yaml
+     echo -e "**** End setting up nginx-ingress. Setting up the app and Jaeger"     
+     kubectl apply -f /vagrant_data/manifests/app/backend.yaml
+     kubectl apply -f /vagrant_data/manifests/app/frontend.yaml
+     kubectl apply -f /vagrant_data/manifests/app/trial.yaml
+     kubectl apply -f /vagrant_data/manifests/other/jaeger-app.yaml
   SHELL
-  
-  args = []
-      config.vm.provision "k3s shell script", type: "shell",
-          path: "scripts/k3s.sh",
-          args: args
+
 end

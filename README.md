@@ -49,37 +49,96 @@ In terms of request response time, we can have an SLI of average request respons
 - **Saturation** — The overall capacity of a service (such as the percentage of memory or CPU used).
 
 ## Create a Dashboard to measure our SLIs
-*TODO:* Create a dashboard to measure the uptime of the frontend and backend services We will also want to measure to measure 40x and 50x errors. Create a dashboard that show these values over a 24 hour period and take a screenshot.
+*DONE:* Create a dashboard to measure the uptime of the frontend and backend services We will also want to measure to measure 40x and 50x errors. Create a dashboard that show these values over a 24 hour period and take a screenshot.
 ![grafana dashboard](./answer-img/grafana-dashboard-40x-50x-uptime.png)
 ## Tracing our Flask App
-*TODO:*  We will create a Jaeger span to measure the processes on the backend. Once you fill in the span, provide a screenshot of it here. Also provide a (screenshot) sample Python file containing a trace and span code used to perform Jaeger traces on the backend service.
-
+*DONE:*  We will create a Jaeger span to measure the processes on the backend. Once you fill in the span, provide a screenshot of it here. Also provide a (screenshot) sample Python file containing a trace and span code used to perform Jaeger traces on the backend service.
+![jaeger-flask-traces](./answer-img/jaeger-flask-traces.png)
 ## Jaeger in Dashboards
-*TODO:* Now that the trace is running, let's add the metric to our current Grafana dashboard. Once this is completed, provide a screenshot of it here.
-
+*DONE:* Now that the trace is running, let's add the metric to our current Grafana dashboard. Once this is completed, provide a screenshot of it here.
+![jaeger-traces-grafana](./answer-img/jaeger-traces-grafana.png)
 ## Report Error
-*TODO:* Using the template below, write a trouble ticket for the developers, to explain the errors that you are seeing (400, 500, latency) and to let them know the file that is causing the issue also include a screenshot of the tracer span to demonstrate how we can user a tracer to locate errors easily.
+*DONE:* Using the template below, write a trouble ticket for the developers, to explain the errors that you are seeing (400, 500, latency) and to let them know the file that is causing the issue also include a screenshot of the tracer span to demonstrate how we can user a tracer to locate errors easily.
 
 TROUBLE TICKET
 
-Name:
+Name: 500 Server Error on Backend Star API Endpoint
 
-Date:
+Date: 2 Fe 2022 03:50
 
-Subject:
+Subject: Backend Star API Endpoint throws 500 Error
 
-Affected Area:
+Affected Area: MongoDB is not setup for the backend API, so /star endpoint fails
 
-Severity:
+Severity: High
 
-Description:
+Description: MongoDB is down. So, /star endpoint throws 500. Steps to reproduce:
+```sh
+curl --location --request POST 'localhost:8081/star' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "alpha",
+    "distance": 2000
+}'
+```
 
 
 ## Creating SLIs and SLOs
-*TODO:* We want to create an SLO guaranteeing that our application has a 99.95% uptime per month. Name three SLIs that you would use to measure the success of this SLO.
+*DONE:* We want to create an SLO guaranteeing that our application has a 99.95% uptime per month. Name three SLIs that you would use to measure the success of this SLO.
+- Uptime
+- Error rate
+- Availability
 
+KPIs follow in next session.
 ## Building KPIs for our plan
-*TODO*: Now that we have our SLIs and SLOs, create KPIs to accurately measure these metrics. We will make a dashboard for this, but first write them down here.
-
+*DONE*: Now that we have our SLIs and SLOs, create KPIs to accurately measure these metrics. We will make a dashboard for this, but first write them down here.
+- Uptime: Services should have uptime greater than 99.95%; CPU usage should be below 75%
+- Error rate: Error rates like 50x should be less than 99.95. For errors like 40x, we have to check on individual basis, as it can be auth issue or bad request. We will still track 40x.
+- Availability: Service should be available and return the right response.
 ## Final Dashboard
-*TODO*: Create a Dashboard containing graphs that capture all the metrics of your KPIs and adequately representing your SLIs and SLOs. Include a screenshot of the dashboard here, and write a text description of what graphs are represented in the dashboard.  
+*DONE*: Create a Dashboard containing graphs that capture all the metrics of your KPIs and adequately representing your SLIs and SLOs. Include a screenshot of the dashboard here, and write a text description of what graphs are represented in the dashboard.  
+![final-dashboard](./answer-img/final-dashoard.png)
+
+1. Uptime dashboard for the services - backend and frontend
+2. Memory and CPU usages ensures we have the uptime. We can also setup alerts on them to mitigate errors
+3. Jaeger Traces help us in understanding the app flow, in case of errors. We can also setup to use it for latency
+4. Http Errors - 50x ad 40x. 50x are more important, but we should keep 40x also in mind.
+
+## Project Setup
+
+### Build Docker image
+
+```sh
+make app-build
+```
+
+Push the images:
+```sh
+make app-up
+```
+
+While working on individual part of the app, like say backend, we can run commands like `make backend-up` OR `make backend-fmt` to bring up the service or format the project.
+### VM with K8s 
+
+```sh
+vg up
+```
+
+### Port Forward Grafana and Jaeger Tracker
+For Grafana
+```sh
+kubectl port-forward -n monitoring svc/prometheus-grafana --address 0.0.0.0 3000:80
+```
+
+Now, you can access grafana at: <http://127.0.0.1:3000>
+
+Import the dashboard from [here](./reference-dashboards/M5%20Dashboard-1675311735759.json). Then you can access url at: <http://127.0.0.1:3000/d/csms8mA4k/m5-dashboard?orgId=1>.
+
+For Jaeger Tracer:
+```sh
+kubectl port-forward -n observability  service/simplest-query --address 0.0.0.0 16686:16686
+```
+
+Now, you can access Jaeger Tracer at <http://127.0.0.1:16686/>. 
+
+The apps - backend, frontend and trial app are already available in host at 8081, 8080 and 8083 ports.

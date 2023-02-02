@@ -1,0 +1,380 @@
+    1  kubectl get pods
+    2  kubectl version
+    3  curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+    4  kubectl create namespace monitoring
+    5  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+    6  helm repo add stable https://charts.helm.sh/stable
+    7  helm repo update
+    8  helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --kubeconfig /etc/rancher/k3s/k3s.yaml
+    9  kubectl get pods -n monitoring
+   10  kubectl create namespace observability
+   11  export jaeger_version=v1.28.0
+   12  kubectl create -n observability -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/crds/jaegertracing.io_jaegers_crd.yaml
+   13  kubectl create -n observability -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/service_account.yaml
+   14  kubectl create -n observability -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/role.yaml
+   15  kubectl create -n observability -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/role_binding.yaml
+   16  kubectl create -n observability -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/operator.yaml
+   17  kubectl create -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/cluster_role.yaml
+   18  kubectl create -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/${jaeger_version}/deploy/cluster_role_binding.yaml
+   19  kubectl get deployments jaeger-operator -n observability
+   20  kubectl get pods,svc --namespace=monitoring
+   21  kubectl get pods,deployments,svc --namespace=monitoring
+   22  kubectl get pods,deployments,svc --namespace=observability
+   23  docker
+   24  kubectl get pods,deployments,svc --namespace=observability
+   25  kubectl get pods,deployments,svc --namespace=monitoring
+   26  ls
+   27  cd manifests/
+   28  ls
+   29  rm -rf other/
+   30  rf -rf sampleapp/
+   31  rm -rf sampleapp/
+   32  ll
+   33  alias ll="ls -l"
+   34  ll
+   35  cd app/
+   36  ll
+   37  kubectl apply -f backend.yaml
+   38  kubectl apply -f frontend.yaml
+   39  kubectl apply -f 
+   40  kubectl get pods
+   41  kubectl get svc
+   42  k 
+   43  alias k="kubectl"
+   44  k get pod -n monitoring
+   45  k get pod -n monitoring | grep grafana
+   46  k port-forward -n monitoring prometheus-grafana-66ddd4c589-btlqj 3000
+   47  curl 127.0.0.1
+   48  curl 127.0.0.1:3000
+   49  k get pods -n all
+   50  kubectl get pods -n all
+   51  kubectl get pods -n monitoring
+   52  k get pod -n monitoring | grep grafana
+   53  alias k="kubectl"
+   54  k get pod -n monitoring | grep grafana
+   55  k port-forward -n monitoring prometheus-grafana-66ddd4c589-btlqj 3000
+   56  k port-forward -n monitoring prometheus-grafana-66ddd4c589-btlqj 3000:3000
+   57  kubectl port-forward svc/frontend-service --address 0.0.0.0 8080:8080
+   58  kubectl get pods,svc --namespace=monitoring
+   59  kubectl get pods,svc --namespace=observability
+   60  kubectl get pods,svc
+   61  kubectl get pods,deployments,svc --namespace=monitoring
+   62  kubectl get pods,deployments,svc --namespace=observability
+   63  kubectl get pods,deployments,svc
+   64  kubectl get pods,deployments,svc --namespace=observability
+   65  kubectl port-forward -n monitoring svc/prometheus-grafana --address 0.0.0.0 3000:80
+   66  ll
+   67  ls -l
+   68  cd manifests/
+   69  ll
+   70  kubectl delete -f
+   71  kubectl delete --help
+   72  kubectl delete -f .
+   73  ll
+   74  ls
+   75  cd app/
+   76  kubectl delete -f .
+   77  curl localhost:8083/
+   78  curl localhost:8083/trace
+   79  curl localhost:8081/xxxx
+   80  curl localhost:8081/xxxy
+   81  curl localhost:8081/xxxyz
+   82  curl localhost:8081/xxxyzd
+   83  curl localhost:8081/xxxyzddfad
+   84  curl localhost:8081/xxxyzddfadadfa
+   85  curl localhost:8081/api
+   86  curl localhost:8081/star
+   87  curl --location --request POST 'localhost:8081/star' --header 'Content-Type: application/json' --data-raw '{
+   88      "name": "alpha",
+   89      "distance": 2000
+   90  }'
+   91  curl --location --request POST localhost:8081/star --header 'Content-Type: application/json' --data-raw '{
+   92      "name": "alpha",
+   93      "distance": 2000
+   94  }'
+   95  curl --location --request POST localhost:8081/star --header 'Content-Type: application/json' --data-raw '{
+   96      "name": "alpha",
+   97      "distance": 2000
+   98  }'
+   99  curl localhost:8080/api
+  100  curl localhost:8080/
+  101  curl http://backend.default.svc.cluster.local
+  102  curl http://backend-app.default.svc.cluster.local
+  103  kubectl get pods,deployments,svc
+  104  curl http://backend-service.default.svc.cluster.local
+  105  curl http://backend-service.svc.cluster.local
+  106  curl http://backend-service.default.svc.cluster.local:8081
+  107  curl http://backend.default.svc.cluster.local:8081
+  108  curl http://backendsvc.default.svc.cluster.local:8081
+  109  curl http://backend.default.svc.cluster.local:8080
+  110  curl http://backend-svc.default.svc.cluster.local:8080
+  111  curl http://backend-svc.default.service.cluster.local:8080
+  112  curl http://backend-svc.default.service.cluster.local:8081
+  113  curl http://backend-svc.default.service.cluster.local:8082
+  114  curl http://backend-svc.default.service.cluster.local:8083
+  115  curl http://backend-service.default.service.cluster.local:8083
+  116  curl http://backend-service.default.service.cluster.local:8081
+  117  curl http://backend-service.default.service.cluster.local:8080
+  118  kubectl get service -n default
+  119  curl http://backend-service.default.service.cluster.local:30075
+  120  curl http://backend-service.default.svc.cluster.local:30075
+  121  curl http://backend-service.default.svc.cluster.local:8081
+  122  curl http://backend.default.svc.cluster.local:8081
+  123  curl http://backend-app.default.svc.cluster.local:8081
+  124  curl http://backend-service.default.svc.cluster.local:8081
+  125  kubectl get svc --url
+  126  kubectl get svc backend-service--url
+  127  kubectl get svc backend-service --url
+  128  kubectl get pods,deployments,svc
+  129  kubectl exec -it backend-app-5d9557cb9f-m6kfk -- /bin/sh
+  130  kubectl exec -it backend-app-5d9557cb9f-m6kfk -- bash
+  131  curl 10.0.2.15
+  132  curl 10.0.2.15:8081
+  133  curl localhost:8081
+  134  curl localhost:8083
+  135  kubectl get pods,deployments,svc
+  136  cd other/
+  137  kubectl apply -f .
+  138  kubectl get deployment -n observability
+  139  kubectl get jaegers -n observability
+  140  kubectl get deployment,pods,svc  -n observability
+  141  kubectl get svc -l app.kubernetes.io/instance=simplest  -n observability
+  142  kubectl apply -f .
+  143  kubectl get jaegers -n observability
+  144  kubectl logs 
+  145  kubectl logs -f -p jaeger
+  146  kubectl logs -f -p jaegers
+  147  kubectl logs -f -p simpletest
+  148  kubectl logs -n observability
+  149  kubectl logs -f -p Jaeger
+  150  kubectl logs -f -p Jaegers
+  151  kubectl logs -f -p simpletest
+  152  kubectl  logs Jaeger
+  153  kubectl  logs simpletest
+  154  kubectl delete -f .
+  155  kubectl apply -f .
+  156  kubectl  logs simpletest
+  157  kubectl  logs Jaegers
+  158  kubectl  logs Jaeger
+  159  kubectl get pods,deployments,svc -n observability
+  160  kubectl get svc -l app.kubernetes.io/instance=simplest  -n observability
+  161  kubectl delete -f .
+  162  kubectl apply -n observability -f - <<EOF
+  163  apiVersion: jaegertracing.io/v1
+  164  kind: Jaeger
+  165  metadata:
+  166    name: simplest
+  167  EOF
+  168  kubectl get pods,deployments,svc -n observability
+  169  kubectl  logs Jaeger
+  170  kubectl  logs simpletest
+  171  kubectl logs 
+  172  kubectl logs -c simpletest
+  173  kubectl logs -f .
+  174  kubectl delete -f .
+  175  kubectl logs -c simplest
+  176  kubectl logs -p simplest
+  177  vim jaeger-app.yaml 
+  178  kubectl delete -f .
+  179  kubectl apply -f .
+  180  kubectl logs -p simplest
+  181  kubectl get deployment -n observability
+  182  kubectl get jaegers -n observability
+  183  kubectl logs jaegers -n observability
+  184  kubectl logs deploy/simplest
+  185  kubectl logs jaegers/simplest
+  186  kubectl logs -p simplest
+  187  kubectl get pods -n observability
+  188  kubectl get jaegers -n observability
+  189  kubectl logs -l jaeger=simplest
+  190  kubectl logs -l jaeger=simplest -n observability
+  191  kubectl logs -l app.kubernetes.io/instance=simplest
+  192  kubectl logs -l app.kubernetes.io/instance=simplest -n oservability
+  193  kubectl logs -l jaeger.jaegertracing.io/instance=simplest -n oservability
+  194  kubectl apply -f .
+  195  kubectl get pods     --field-selector="status.phase!=Succeeded,status.phase!=Running"     -o custom-columns="POD:metadata.name"
+  196  kubectl get pods
+  197  kubectl get pods -n observability
+  198  vim jaeger-app.yaml 
+  199  kubectl get pods -n observability
+  200  kubectl apply -f .
+  201  kubectl get pods -n observability
+  202  kubectl get jaegers -n observability
+  203  kubectl logs -p k2-traces
+  204  kubectl logs k2-traces
+  205  kubectl logs
+  206  kubectl logs -h
+  207  kubectl logs --all-containers
+  208  kubectl logs --all-containers=false
+  209  kubectl logs jaeger.jaegertracing.io/k2-traces --all-containers=false
+  210  kubectl logs -p jaeger.jaegertracing.io/k2-traces --all-containers=false
+  211  kubectl logs -p jaegertracing.io/k2-traces --all-containers=false
+  212  kubectl delete -f .
+  213  vim jaeger-app.yaml 
+  214  kubectl delete -f .
+  215  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.3/deploy/static/provider/cloud/deploy.yaml
+  216  ls -l
+  217  cat jaeger-app.yaml 
+  218  kubectl apply -f .
+  219  kubectl -n observability  port-forward  service/simplest --address 0.0.0.0 16686:16686
+  220  kubectl get deployment  -n observability
+  221  kubectl get jaegers -n observability
+  222  kubectl get svc -l app.kubernetes.io/instance=simplest  -n observability
+  223  vim jaeger-app.yaml 
+  224  kubectl delete -f .
+  225  vim jaeger-app.yaml 
+  226  cat jaeger-app.yaml 
+  227  kubectl logs -l jaeger.jaegertracing.io/instance=simplest -n oservability
+  228  kubectl logs -l app=jaeger -n oservability
+  229  kubectl apply -f .
+  230  kubectl logs -l app=jaeger -n oservability
+  231  kubectl delete -f .
+  232  kubectl get deployments jaeger-operator -n observability
+  233  kubectl delete -f .
+  234  kubectl apply -f .
+  235  kubectl get deployments jaeger-operator -n observability
+  236  kubectl get deployments simplest -n observability
+  237  kubectl get jaegers -n observability
+  238  kubectl logs jaegers -n observability
+  239  kubectl logs -l app=jaeger -n observability
+  240  kubectl get deployments -n ingress-nginx
+  241  kubectl get pods --namespace=ingress-nginx
+  242  kubectl logs -f ingress-nginx-admission-create-j4j2m
+  243  kubectl logs -f ingress-nginx-admission-create-j4j2m -n ingress-nginx
+  244  kubectl delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.3/deploy/static/provider/cloud/deploy.yaml
+  245  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.3/deploy/static/provider/cloud/deploy.yaml --kubeconfig /etc/rancher/k3s/k3s.yaml
+  246  kubectl get pods --namespace=ingress-nginx
+  247  kubectl logs -f ingress-nginx-admission-create-6lk2n -n ingress-nginx
+  248  kubectl delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.3/deploy/static/provider/cloud/deploy.yaml
+  249  kubectl get pods --namespace=ingress-nginx
+  250  export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+  251  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.3/deploy/static/provider/cloud/deploy.yaml --kubeconfig /etc/rancher/k3s/k3s.yaml
+  252  kubectl get pods --namespace=ingress-nginx
+  253  kubectl logs -f ingress-nginx-admission-create-bwv9z -n ingress-nginx
+  254  kubectl get pods --namespace=ingress-nginx
+  255  kubectl apply -f .
+  256  kubectl get jaegers -n observability
+  257  kubectl delete -f .
+  258  kubectl apply -f .
+  259  kubectl get jaegers -n observability
+  260  kubectl delete -f .
+  261  kubectl delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.3/deploy/static/provider/cloud/deploy.yaml
+  262  alias k=kubectl
+  263  alias kc=kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml
+  264  alias kc="kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml"
+  265  kc apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.3/deploy/static/provider/cloud/deploy.yaml
+  266  kubectl delete -f .
+  267  kubectl get pods --namespace=ingress-nginx
+  268  kubectl logs -f ingress-nginx-admission-create-mz56w -n ingress-nginx
+  269  kubectl delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.3/deploy/static/provider/cloud/deploy.yaml
+  270  kc apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.5.1/deploy/static/provider/cloud/deploy.yaml
+  271  kubectl get pods --namespace=ingress-nginx
+  272  kubectl logs -f ingress-nginx-admission-create-kv6mt -n ingress-nginx
+  273  kubectl get pods --namespace=ingress-nginx
+  274  k apply -f .
+  275  kubectl get jaegers -n observability
+  276  kubectl get svc -l app.kubernetes.io/instance=simplest  -n observability
+  277  kubectl logs -l app.kubernetes.io/instance=simplest  -n observability
+  278  kubectl logs -l app=jaeger  -n observability
+  279  k delete -f .
+  280  k delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.5.1/deploy/static/provider/cloud/deploy.yaml
+  281  helm upgrade --install ingress-nginx ingress-nginx   --repo https://kubernetes.github.io/ingress-nginx   --namespace ingress-nginx --create-namespace  --kubeconfig /etc/rancher/k3s/k3s.yaml
+  282  kubectl get pods --namespace=ingress-nginx
+  283  k logs ingress-nginx-controller-666b65b6dc-ph48h -n ingress-nginx
+  284  kc apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.5.1/deploy/static/provider/cloud/deploy.yaml
+  285  k apply -f .
+  286  kubectl get jaegers -n observability
+  287  kc delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.5.1/deploy/static/provider/cloud/deploy.yaml
+  288  helm upgrade --install ingress-nginx ingress-nginx   --repo https://kubernetes.github.io/ingress-nginx   --namespace ingress-nginx --create-namespace  --kubeconfig /etc/rancher/k3s/k3s.yaml
+  289  k logs ingress-nginx-controller-666b65b6dc-ph48h -n ingress-nginx
+  290  kubectl get pods --namespace=ingress-nginx
+  291  k logs ingress-nginx-controller-666b65b6dc-8bvh6 -n ingress-nginx
+  292  kubectl apply -n observability -f - <<EOF
+  293  apiVersion: jaegertracing.io/v1
+  294  kind: Jaeger
+  295  metadata:
+  296    name: simplest
+  297  EOF
+  298  kubectl get jaegers -n observability
+  299  k delete -f .
+  300  kubectl apply -n observability -f - <<EOF
+  301  apiVersion: jaegertracing.io/v1
+  302  kind: Jaeger
+  303  metadata:
+  304    name: simplest
+  305  EOF
+  306  kubectl get -n observability ingress
+  307  kubectl get deployment jaeger-operator -n observability
+  308  kubectl get pods -n observability
+  309  kubectl logs -f jaeger-operator-86cddd549c-xmx2c -n observability
+  310  kubectl port-forward svc/frontend-service --address 0.0.0.0 8080:8080
+  311  ll
+  312  ls
+  313  cd manifests/
+  314  ls
+  315  cd app/
+  316  ls
+  317  cat backend.yaml 
+  318  cd ..
+  319  ll
+  320  ls
+  321  rm -rf app/
+  322  ls
+  323  cat manifests/app/backend.yaml 
+  324  cd ..
+  325  ls
+  326  rm -rf manifests/
+  327  ls
+  328  cd app
+  329  ls
+  330  kubectl apply -f 
+  331  kubectl apply -f .
+  332  kubectl get pods,deployments,svc
+  333  kubectl port-forward svc/frontend-service --address 0.0.0.0 8080:8080
+  334  ll
+  335  ls
+  336  kubectl delete -f .
+  337  ll
+  338  ls -l
+  339  cat trial.yaml 
+  340  kubectl apply -f .
+  341  kubectl port-forward svc/frontend-service --address 0.0.0.0 8080:8080
+  342  kubectl rolling-update frontend-app
+  343  kubectl rollout restart frontend-app
+  344  kubectl rollout restart pods/frontend-app
+  345  kubectl get pods,deployments,svc
+  346  kubectl rollout restart frontend
+  347  kubectl rollout restart frontend-app
+  348  kubectl get pods,deployments,svc
+  349  kubectl rollout restart deployment.apps/frontend-app
+  350  kubectl port-forward svc/frontend-service --address 0.0.0.0 8080:8080
+  351  curl localhost:8081/api
+  352  kubectl port-forward svc/trial-service --address 0.0.0.0 8083:8083
+  353  kubectl port-forward svc/backend-service --address 0.0.0.0 8081:8080
+  354  kubectl port-forward svc/backend-service --address 0.0.0.0 8081:8081
+  355  kubectl port-forward svc/backend-service --address 0.0.0.0 8080:8081
+  356  kubectl port-forward svc/backend-service --address 0.0.0.0 8081:8081
+  357  curl backend.svc:8081
+  358  curl http://backend.default.svc.cluster.local
+  359  kubectl get pods,deployments,svc
+  360  kubectl port-forward svc/backend-service --address 0.0.0.0 8081:8081
+  361  kubectl port-forward svc/backend-service --address 0.0.0.0 8080:8081
+  362  kubectl port-forward svc/backend-service --address 0.0.0.0 8081:8081
+  363  kubectl
+  364  kubectl get pods,deployments,svc
+  365  kubectl version
+  366  kubectl get deployment -n nginx-ingress
+  367  kubectl get deployment -n ingress-nginx
+  368  ll
+  369  ls
+  370  cat /vagrant_data/manifests/
+  371  ls /vagrant_data/manifests/
+  372  cd /vagrant_data/manifests/
+  373  ls
+  374  cd other/
+  375  kubectl get jaegers -n observability
+  376  kubectl delete -f .
+  377  kubectl create -f .
+  378  kubectl apply -f .
+  379  kubectl get jaegers -n observability
+  380  history > /vagrant_data/manifests/vg_history4.txt
