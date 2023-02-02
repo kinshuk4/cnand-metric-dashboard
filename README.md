@@ -66,7 +66,7 @@ TROUBLE TICKET
 
 Name: 500 Server Error on Backend Star API Endpoint
 
-Date: 2 Fe 2022 03:50
+Date: 2 Feb 2023 10:00 am
 
 Subject: Backend Star API Endpoint throws 500 Error
 
@@ -83,29 +83,56 @@ curl --location --request POST 'localhost:8081/star' \
     "distance": 2000
 }'
 ```
+First I saw 50x Panel in the dashboard. Then, I checked the traces:
+![incident-grafana-1](./answer-img/incident-grafana-1.png)
+Then i check the traces:
+![incident-jaeger-trace](./answer-img/incident-jaeger-trace.png)
 
+Then I delve into the pods to see the logs using `kubectl logs --selector app=backend -c backend`.
 
+This is where i see the error:
+![incident-kubectl-logs](./answer-img/incident-kubectl-logs.png)
 ## Creating SLIs and SLOs
-*DONE:* We want to create an SLO guaranteeing that our application has a 99.95% uptime per month. Name three SLIs that you would use to measure the success of this SLO.
-- Uptime
-- Error rate
-- Availability
+*DONE:* We want to create an SLO guaranteeing that our application has a 99.95% uptime per month. Name four SLIs that you would use to measure the success of this SLO.
 
-KPIs follow in next session.
+1. Application uptime is greater than 99.95%
+2. Server resources - memory and cpu usage don't exceed more than 90%
+3. Http Error rate 50x and 40x should be less than 95 %
+4. 90 % of responses should have average http response time or latency less than 200 ms
 ## Building KPIs for our plan
 *DONE*: Now that we have our SLIs and SLOs, create KPIs to accurately measure these metrics. We will make a dashboard for this, but first write them down here.
-- Uptime: Services should have uptime greater than 99.95%; CPU usage should be below 75%
-- Error rate: Error rates like 50x should be less than 99.95. For errors like 40x, we have to check on individual basis, as it can be auth issue or bad request. We will still track 40x.
-- Availability: Service should be available and return the right response.
+- Services should have uptime greater than 99% over the month; 
+    - Uptime of services is more than 99%. We are using `up` function in grafana to see uptime of backend and frontend apps
+    - Downtime of the services due to deployments or any other reason is less than 1%. 
+- Server resources - memory and cpu usage don't exceed more than 90%
+    - CPU usage is less than 70% - We track it using `node_cpu_seconds_total` rate over the time
+    - Memory usage is less than 70%  - We are `node_memory_MemAvailable_bytes` and `node_memory_MemTotal_bytes` to see how much memory is used 
+- Http Error codes 50x and 40x should be less than 99 %   
+    - Http error rate is less than 5%. Http 50x status errors should be less than 0.5%. Http 40x For errors like 40x, we have to check on individual basis, as it can be auth issue or bad request. For this project, let Http 40x errors rate is less than 0.05%. We cover it with 3 charts - Http 50x Errors, Http 40x Errors and Http Error rate 
+    - Http success rate is more than 99.5%. Chart to cover it - Http Success Rate
+    - Jaeger Tracker - to see if get the trace in case of errors (depending on the setup)
+- 90% of http request have latency less than 200 ms
+    - Average HTTP Request latency is less than 200 ms
+    - P95 Latency (95% percentage of requests) have latency less than 200ms
 ## Final Dashboard
-*DONE*: Create a Dashboard containing graphs that capture all the metrics of your KPIs and adequately representing your SLIs and SLOs. Include a screenshot of the dashboard here, and write a text description of what graphs are represented in the dashboard.  
-![final-dashboard](./answer-img/final-dashoard.png)
+*DONE*: Create a Dashboard containing graphs that capture all the metrics of your KPIs and adequately representing your SLIs and SLOs. Include a screenshot of the dashboard here, and write a text description of what graphs are represented in the dashboard.
 
-1. Uptime dashboard for the services - backend and frontend
-2. Memory and CPU usages ensures we have the uptime. We can also setup alerts on them to mitigate errors
-3. Jaeger Traces help us in understanding the app flow, in case of errors. We can also setup to use it for latency
-4. Http Errors - 50x ad 40x. 50x are more important, but we should keep 40x also in mind.
+![final-dashboard](./answer-img/final-dashboard-1.png)
+![final-dashboard](./answer-img/final-dashboard-2.png)
+![final-dashboard](./answer-img/final-dashboard-3.png)
 
+The graph below has the following charts:
+- Uptime - Frontend and Backend - Tracks the time since our backend and frontend containers are up
+- Downtime chart - Tracks percentage of downtime for the detault namespace
+- Memory Usage - Tracks CPU usage for our K8s cluster - covers all apps running on it
+- CPU Usage - Tracks CPU usage for our K8s Cluster - covers all apps running on it
+- Jaeger Trace - Traces shown by Jaeger over time
+- HTTP 5xx Error - This displays the number of 5xx status codes for all containers - backend, frontend and trial.
+- HTTP 4xx Errors - This displays the number of 4xx status codes for all containers -  backend, frontend and trial
+- Http Error Rate - Measures percentage of errors over time for the backend, trial and frontend services
+- Http Success Rate - Measures percentage of success over time for the backend, trial and frontend services
+- Http Request Latency - Measures average latency of the flask apps over time
+- P95 Request Latency - Measures that 95% of the requests have latency less than 200ms.
 ## Project Setup
 
 ### Build Docker image
@@ -127,6 +154,11 @@ vg up
 ```
 
 ### Port Forward Grafana and Jaeger Tracker
+
+First step:
+```sh
+vagrant ssh
+```
 For Grafana
 ```sh
 kubectl port-forward -n monitoring svc/prometheus-grafana --address 0.0.0.0 3000:80
